@@ -53,6 +53,15 @@
   color: var(--text-tertiary);
 }
 
+.chartLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
+}
+
 /* Today's Progress */
 .todayProgress {
   display: grid;
@@ -163,6 +172,8 @@
   background: var(--bg-secondary);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
+  min-height: 300px;
+  width: 100%;
 }
 
 .customTooltip {
