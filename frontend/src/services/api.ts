@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { Task, Habit, Category, DailyProgress, PeriodProgress, ProgressLog, AuthResponse } from '../types';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://habit-tracker-anu.onrender.com'
+  :'http://localhost:3001/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -133,3 +135,4 @@ export const categoriesApi = {
 };
 
 export default api;
+
