@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { format, startOfWeek, endOfWeek, subDays, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { format, startOfWeek, subDays } from 'date-fns';
 import {
   LineChart,
   Line,
@@ -36,6 +36,16 @@ export const Statistics: React.FC = () => {
   const [statsData, setStatsData] = useState<StatsData | null>(null);
   const [activeTab, setActiveTab] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('weekly');
   const [isLoading, setIsLoading] = useState(true);
+  const [isChartReady, setIsChartReady] = useState(false);
+
+  // Delay chart rendering to allow modal animation to complete
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsChartReady(true);
+    }, 350); // Wait for modal animation (spring ~300ms)
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -261,6 +271,7 @@ export const Statistics: React.FC = () => {
             Weekly Progress
           </h4>
           <div className={styles.chartContainer}>
+            {isChartReady ? (
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={formatWeeklyData()}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -297,6 +308,9 @@ export const Statistics: React.FC = () => {
                 />
               </LineChart>
             </ResponsiveContainer>
+            ) : (
+              <div className={styles.chartLoading}>Loading chart...</div>
+            )}
           </div>
 
           <div className={styles.summaryCards}>
@@ -326,6 +340,7 @@ export const Statistics: React.FC = () => {
             Monthly Progress - {format(selectedDate, 'MMMM yyyy')}
           </h4>
           <div className={styles.chartContainer}>
+            {isChartReady ? (
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={formatMonthlyData()}>
                 <defs>
@@ -370,6 +385,9 @@ export const Statistics: React.FC = () => {
                 />
               </AreaChart>
             </ResponsiveContainer>
+            ) : (
+              <div className={styles.chartLoading}>Loading chart...</div>
+            )}
           </div>
 
           {/* Category Breakdown */}
@@ -378,6 +396,7 @@ export const Statistics: React.FC = () => {
               <h4 className={styles.sectionTitle}>Category Breakdown</h4>
               <div className={styles.categoryGrid}>
                 <div className={styles.pieContainer}>
+                  {isChartReady ? (
                   <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
                       <Pie
@@ -396,6 +415,9 @@ export const Statistics: React.FC = () => {
                       <Tooltip />
                     </PieChart>
                   </ResponsiveContainer>
+                  ) : (
+                    <div className={styles.chartLoading}>Loading...</div>
+                  )}
                 </div>
                 <div className={styles.categoryList}>
                   {formatCategoryData().map((cat: any, index: number) => (
@@ -436,6 +458,7 @@ export const Statistics: React.FC = () => {
             Yearly Progress - {selectedDate.getFullYear()}
           </h4>
           <div className={styles.chartContainer}>
+            {isChartReady ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={formatYearlyData()}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -456,6 +479,9 @@ export const Statistics: React.FC = () => {
                 <Bar dataKey="habits" fill="#14b8a6" name="Habits" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+            ) : (
+              <div className={styles.chartLoading}>Loading chart...</div>
+            )}
           </div>
 
           <div className={styles.yearSummary}>
