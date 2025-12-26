@@ -142,6 +142,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     };
     seedCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Task Actions
