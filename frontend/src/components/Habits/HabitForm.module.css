@@ -1,0 +1,213 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.daysGrid {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.dayBtn {
+  width: 48px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-secondary);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.dayBtn:hover {
+  background: var(--bg-tertiary);
+}
+
+.dayBtn.active {
+  border-color: var(--accent-500);
+  background: rgba(20, 184, 166, 0.1);
+  color: var(--accent-600);
+}
+
+.priorityOptions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.priorityBtn {
+  flex: 1;
+  padding: var(--space-3);
+  background: var(--bg-secondary);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.priorityBtn:hover {
+  background: var(--bg-tertiary);
+}
+
+.priorityBtn.active {
+  border-color: var(--primary-500);
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--primary-500);
+}
+
+.priorityBtn.active.priority1 {
+  border-color: var(--success);
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+}
+
+.priorityBtn.active.priority2 {
+  border-color: var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.priorityBtn.active.priority3 {
+  border-color: var(--error);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error);
+}
+
+.reminderRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-tertiary);
+  transition: var(--transition-fast);
+  border-radius: 26px;
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: var(--transition-fast);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.toggle input:checked + .toggleSlider {
+  background-color: var(--primary-500);
+}
+
+.toggle input:checked + .toggleSlider:before {
+  transform: translateX(22px);
+}
+
+.timeInput {
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.timeInput:focus {
+  border-color: var(--primary-500);
+  outline: none;
+}
+
+.timeInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.colorOptions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.colorBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.colorBtn:hover {
+  transform: scale(1.1);
+}
+
+.colorBtn.active {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 480px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .daysGrid {
+    justify-content: center;
+  }
+
+  .priorityOptions {
+    flex-direction: column;
+  }
+}

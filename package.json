@@ -1,0 +1,16 @@
+{
+  "name": "habit-flow",
+  "version": "1.0.0",
+  "description": "Task and Habit Planner Web Application",
+  "scripts": {
+    "start:backend": "cd backend && npm run start:dev",
+    "start:frontend": "cd frontend && npm start",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install"
+  },
+  "keywords": ["habit", "tracker", "task", "planner", "productivity"],
+  "author": "",
+  "license": "MIT"
+}
+

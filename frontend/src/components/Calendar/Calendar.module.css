@@ -1,0 +1,391 @@
+.calendar {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 280px;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.viewToggle {
+  display: flex;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+
+.viewBtn {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.viewBtn:hover {
+  color: var(--text-primary);
+}
+
+.viewBtn.active {
+  background: var(--surface);
+  color: var(--primary-500);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Month View */
+.monthView {
+  display: flex;
+  flex-direction: column;
+}
+
+.weekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.weekDay {
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-tertiary);
+  padding: var(--space-2);
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-2);
+}
+
+.day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: transparent;
+  transition: all var(--transition-fast);
+  position: relative;
+  min-height: 80px;
+}
+
+.day:hover {
+  background: var(--bg-secondary);
+}
+
+.day.otherMonth {
+  opacity: 0.4;
+}
+
+.day.selected {
+  background: var(--primary-500);
+}
+
+.day.selected .dayNumber {
+  color: white;
+}
+
+.day.today .dayNumber {
+  background: var(--accent-500);
+  color: white;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+.day.selected.today .dayNumber {
+  background: white;
+  color: var(--primary-500);
+}
+
+.dayNumber {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.dayIndicators {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.taskDot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  opacity: 0.8;
+}
+
+.taskDot.completed {
+  opacity: 0.4;
+}
+
+.moreTasks {
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+
+.dayProgress {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  right: 4px;
+  height: 3px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.dayProgressFill {
+  height: 100%;
+  background: var(--success);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
+}
+
+/* Day View */
+.dayView {
+  min-height: 200px;
+}
+
+.dayViewContent {
+  display: flex;
+  justify-content: center;
+}
+
+.todayCard {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 300px;
+}
+
+.todayDate {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.todayDay {
+  font-family: var(--font-display);
+  font-size: var(--text-5xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.todayWeekday {
+  display: block;
+  font-size: var(--text-lg);
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.todayMonth {
+  display: block;
+  font-size: var(--text-sm);
+  opacity: 0.7;
+}
+
+.todayStats {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.todayStat {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+}
+
+.statLabel {
+  font-size: var(--text-sm);
+  opacity: 0.8;
+}
+
+/* Week View */
+.weekView {
+  padding: var(--space-4) 0;
+}
+
+.weekDaysHorizontal {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-3);
+}
+
+.weekDayCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.weekDayCard:hover {
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+}
+
+.weekDayCard.selected {
+  background: var(--primary-500);
+  color: white;
+}
+
+.weekDayCard.today {
+  border: 2px solid var(--accent-500);
+}
+
+.weekDayName {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.weekDayNumber {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+}
+
+.weekDayTasks {
+  font-size: var(--text-xs);
+  opacity: 0.6;
+  margin-top: var(--space-1);
+}
+
+/* Year View */
+.yearView {
+  padding: var(--space-4) 0;
+}
+
+.monthsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.monthCard {
+  padding: var(--space-6);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.monthCard:hover {
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+}
+
+.monthCard.current {
+  border: 2px solid var(--accent-500);
+}
+
+.monthCard.selected {
+  background: var(--primary-500);
+  color: white;
+}
+
+.monthName {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calendar {
+    padding: var(--space-4);
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .navigation {
+    justify-content: center;
+  }
+
+  .actions {
+    justify-content: center;
+  }
+
+  .title {
+    min-width: auto;
+  }
+
+  .day {
+    min-height: 60px;
+    padding: var(--space-1);
+  }
+
+  .dayNumber {
+    font-size: var(--text-xs);
+  }
+
+  .weekDaysHorizontal {
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--space-1);
+  }
+
+  .weekDayCard {
+    padding: var(--space-2);
+  }
+
+  .monthsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
