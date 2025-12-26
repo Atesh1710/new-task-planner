@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Task, Habit, Category, DailyProgress, PeriodProgress, ProgressLog, AuthResponse } from '../types';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? 'https://habit-tracker-anu.onrender.com'
+  ? 'https://habit-tracker-anu.onrender.com/api'
   :'http://localhost:3001/api';
 
 const api = axios.create({
@@ -135,4 +135,5 @@ export const categoriesApi = {
 };
 
 export default api;
+
 
