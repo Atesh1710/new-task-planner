@@ -74,5 +74,8 @@
 .content {
   padding: var(--space-6);
   overflow-y: auto;
+  min-height: 200px;
+  max-height: calc(90vh - 80px)
 }
+
 
