@@ -62,6 +62,35 @@
   font-size: var(--text-sm);
 }
 
+.tabLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: var(--space-4);
+  color: var(--text-secondary);
+}
+
+.tabLoading p {
+  font-size: var(--text-sm);
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--bg-tertiary);
+  border-top-color: var(--primary-500);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Today's Progress */
 .todayProgress {
   display: grid;
@@ -406,6 +435,25 @@
   }
 
   .summaryCards {
+    grid-template-columns: 1fr;
+  }
+
+  .chartContainer {
+    min-height: 250px;
+    padding: var(--space-2);
+  }
+
+  .tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tab {
+    padding: var(--space-2) var(--space-2);
+    font-size: var(--text-xs);
+  }
+
+  .habitStats {
     grid-template-columns: 1fr;
   }
 }
