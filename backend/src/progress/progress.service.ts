@@ -180,37 +180,70 @@ export class ProgressService {
   }
 
   private async generateDailyBreakdown(userId: string, start: Date, end: Date): Promise<any[]> {
+    // Use aggregation to get all task data in ONE query
+    const taskAggregation = await this.taskModel.aggregate([
+      {
+        $match: {
+          userId: new Types.ObjectId(userId),
+          date: { $gte: start, $lte: end },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$date' },
+          },
+          tasksTotal: { $sum: 1 },
+          tasksCompleted: {
+            $sum: { $cond: [{ $eq: ['$completed', true] }, 1, 0] },
+          },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // Use aggregation to get all habit log data in ONE query
+    const habitAggregation = await this.progressLogModel.aggregate([
+      {
+        $match: {
+          userId: new Types.ObjectId(userId),
+          date: { $gte: start, $lte: end },
+          completed: true,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$date' },
+          },
+          habitsCompleted: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // Create maps for quick lookup
+    const taskMap = new Map(
+      taskAggregation.map((t) => [t._id, { tasksTotal: t.tasksTotal, tasksCompleted: t.tasksCompleted }])
+    );
+    const habitMap = new Map(
+      habitAggregation.map((h) => [h._id, h.habitsCompleted])
+    );
+
+    // Generate daily data by iterating through date range (in memory, no DB queries)
     const dailyData = [];
     const current = new Date(start);
 
     while (current <= end) {
-      const dayStart = new Date(current);
-      dayStart.setHours(0, 0, 0, 0);
-      const dayEnd = new Date(current);
-      dayEnd.setHours(23, 59, 59, 999);
-
-      const tasks = await this.taskModel
-        .find({
-          userId: new Types.ObjectId(userId),
-          date: { $gte: dayStart, $lte: dayEnd },
-        })
-        .exec();
-
-      const completedTasks = tasks.filter((t) => t.completed).length;
-
-      const habitLogs = await this.progressLogModel
-        .find({
-          userId: new Types.ObjectId(userId),
-          date: dayStart,
-          completed: true,
-        })
-        .exec();
+      const dateKey = current.toISOString().split('T')[0];
+      const taskData = taskMap.get(dateKey) || { tasksTotal: 0, tasksCompleted: 0 };
+      const habitsCompleted = habitMap.get(dateKey) || 0;
 
       dailyData.push({
         date: new Date(current),
-        tasksTotal: tasks.length,
-        tasksCompleted: completedTasks,
-        habitsCompleted: habitLogs.length,
+        tasksTotal: taskData.tasksTotal,
+        tasksCompleted: taskData.tasksCompleted,
+        habitsCompleted,
       });
 
       current.setDate(current.getDate() + 1);
@@ -220,48 +253,74 @@ export class ProgressService {
   }
 
   private async getCategoryBreakdown(userId: string, start: Date, end: Date): Promise<any> {
-    const tasks = await this.taskModel
-      .find({
-        userId: new Types.ObjectId(userId),
-        date: { $gte: start, $lte: end },
-      })
-      .exec();
+    // Aggregate task data by category in ONE query
+    const taskCategoryAggregation = await this.taskModel.aggregate([
+      {
+        $match: {
+          userId: new Types.ObjectId(userId),
+          date: { $gte: start, $lte: end },
+        },
+      },
+      {
+        $group: {
+          _id: '$category',
+          total: { $sum: 1 },
+          completed: {
+            $sum: { $cond: [{ $eq: ['$completed', true] }, 1, 0] },
+          },
+        },
+      },
+    ]);
 
+    // Get habits with their categories
     const habits = await this.habitModel.find({
       userId: new Types.ObjectId(userId),
       isActive: true,
     }).exec();
 
-    const categoryData: { [key: string]: { total: number; completed: number } } = {};
-
-    // Aggregate task data by category
-    tasks.forEach((task) => {
-      if (!categoryData[task.category]) {
-        categoryData[task.category] = { total: 0, completed: 0 };
-      }
-      categoryData[task.category].total++;
-      if (task.completed) {
-        categoryData[task.category].completed++;
-      }
-    });
-
-    // Aggregate habit data by category
-    for (const habit of habits) {
-      const logs = await this.progressLogModel
-        .find({
+    // Aggregate habit logs by habitId in ONE query
+    const habitLogAggregation = await this.progressLogModel.aggregate([
+      {
+        $match: {
           userId: new Types.ObjectId(userId),
-          habitId: habit._id,
           date: { $gte: start, $lte: end },
           completed: true,
-        })
-        .exec();
+        },
+      },
+      {
+        $group: {
+          _id: '$habitId',
+          completed: { $sum: 1 },
+        },
+      },
+    ]);
 
+    // Create map for habit log counts
+    const habitLogMap = new Map(
+      habitLogAggregation.map((h) => [h._id.toString(), h.completed])
+    );
+
+    // Build category data
+    const categoryData: { [key: string]: { total: number; completed: number } } = {};
+
+    // Add task category data
+    taskCategoryAggregation.forEach((tc) => {
+      if (!categoryData[tc._id]) {
+        categoryData[tc._id] = { total: 0, completed: 0 };
+      }
+      categoryData[tc._id].total += tc.total;
+      categoryData[tc._id].completed += tc.completed;
+    });
+
+    // Add habit category data
+    const days = this.getDaysBetween(start, end);
+    habits.forEach((habit) => {
       if (!categoryData[habit.category]) {
         categoryData[habit.category] = { total: 0, completed: 0 };
       }
-      categoryData[habit.category].total += this.getDaysBetween(start, end);
-      categoryData[habit.category].completed += logs.length;
-    }
+      categoryData[habit.category].total += days;
+      categoryData[habit.category].completed += habitLogMap.get(habit._id.toString()) || 0;
+    });
 
     return Object.entries(categoryData).map(([category, data]) => ({
       category,
