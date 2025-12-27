@@ -6,7 +6,7 @@ import { AuthPage } from './components/Auth/AuthPage';
 import { Calendar } from './components/Calendar/Calendar';
 import { TaskList } from './components/Tasks/TaskList';
 import { HabitList } from './components/Habits/HabitList';
-import { Statistics } from './components/Statistics/Statistics';
+import { HabitPerformance } from './components/Habits/HabitPerformance';
 import { ProgressBar } from './components/ui/ProgressBar';
 import { useApp } from './context/AppContext';
 import styles from './App.module.css';
@@ -46,16 +46,15 @@ const DashboardContent: React.FC = () => {
         </div>
       )}
 
-      {/* Main Grid Layout */}
-      <div className={styles.grid}>
-        <div className={styles.leftColumn}>
-          <Calendar />
-          <Statistics />
-        </div>
-        <div className={styles.rightColumn}>
+      {/* Main Layout - Calendar on top, then Tasks and Habits */}
+      <div className={styles.mainContent}>
+        <Calendar />
+        <div className={styles.listsContainer}>
           <TaskList />
           <HabitList />
         </div>
+        {/* Habit Performance below habits */}
+        <HabitPerformance />
       </div>
     </div>
   );
