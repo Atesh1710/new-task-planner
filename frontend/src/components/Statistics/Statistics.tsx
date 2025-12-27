@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { format, startOfWeek, subDays } from 'date-fns';
 import {
@@ -33,49 +33,91 @@ interface StatsData {
 
 export const Statistics: React.FC = () => {
   const { selectedDate, dailyProgress, habits } = useApp();
-  const [statsData, setStatsData] = useState<StatsData | null>(null);
-  const [activeTab, setActiveTab] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('weekly');
-  const [isLoading, setIsLoading] = useState(true);
+  const [statsData, setStatsData] = useState<StatsData>({
+    weekly: null,
+    monthly: null,
+    yearly: null,
+    habitStats: null,
+  });
+  const [activeTab, setActiveTab] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('daily');
+  const [isLoading, setIsLoading] = useState(false);
   const [isChartReady, setIsChartReady] = useState(false);
+  const [loadedTabs, setLoadedTabs] = useState<Set<string>>(new Set(['daily']));
 
   // Delay chart rendering to allow modal animation to complete
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsChartReady(true);
-    }, 350); // Wait for modal animation (spring ~300ms)
+    }, 100); // Reduced delay since we're only in modal now
     
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      setIsLoading(true);
-      try {
-        const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
-        const year = selectedDate.getFullYear();
-        const month = selectedDate.getMonth() + 1;
+  // Fetch data only for the active tab (lazy loading)
+  const fetchTabData = useCallback(async (tab: string) => {
+    if (loadedTabs.has(tab) && statsData[tab as keyof StatsData]) {
+      return; // Already loaded
+    }
 
-        const [weeklyRes, monthlyRes, yearlyRes, habitStatsRes] = await Promise.all([
-          progressApi.getWeekly(format(weekStart, 'yyyy-MM-dd')),
-          progressApi.getMonthly(year, month),
-          progressApi.getYearly(year),
-          habitsApi.getStats(format(subDays(new Date(), 30), 'yyyy-MM-dd'), format(new Date(), 'yyyy-MM-dd')),
-        ]);
+    setIsLoading(true);
+    try {
+      const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth() + 1;
 
-        setStatsData({
-          weekly: weeklyRes.data,
-          monthly: monthlyRes.data,
-          yearly: yearlyRes.data,
-          habitStats: habitStatsRes.data,
-        });
-      } catch (error) {
-        console.error('Error fetching stats:', error);
-      } finally {
-        setIsLoading(false);
+      let data: any = null;
+
+      switch (tab) {
+        case 'weekly':
+          const weeklyRes = await progressApi.getWeekly(format(weekStart, 'yyyy-MM-dd'));
+          data = weeklyRes.data;
+          setStatsData(prev => ({ ...prev, weekly: data }));
+          break;
+        case 'monthly':
+          const monthlyRes = await progressApi.getMonthly(year, month);
+          data = monthlyRes.data;
+          setStatsData(prev => ({ ...prev, monthly: data }));
+          break;
+        case 'yearly':
+          const yearlyRes = await progressApi.getYearly(year);
+          data = yearlyRes.data;
+          setStatsData(prev => ({ ...prev, yearly: data }));
+          break;
       }
-    };
 
-    fetchStats();
+      // Fetch habit stats if not already loaded (shared across tabs)
+      if (!statsData.habitStats) {
+        const habitStatsRes = await habitsApi.getStats(
+          format(subDays(new Date(), 30), 'yyyy-MM-dd'),
+          format(new Date(), 'yyyy-MM-dd')
+        );
+        setStatsData(prev => ({ ...prev, habitStats: habitStatsRes.data }));
+      }
+
+      setLoadedTabs(prev => new Set(Array.from(prev).concat(tab)));
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedDate, loadedTabs, statsData]);
+
+  // Fetch data when tab changes
+  useEffect(() => {
+    if (activeTab !== 'daily') {
+      fetchTabData(activeTab);
+    }
+  }, [activeTab, fetchTabData]);
+
+  // Reset loaded tabs when date changes
+  useEffect(() => {
+    setLoadedTabs(new Set(['daily']));
+    setStatsData({
+      weekly: null,
+      monthly: null,
+      yearly: null,
+      habitStats: null,
+    });
   }, [selectedDate]);
 
   const CHART_COLORS = ['#e63946', '#14b8a6', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'];
@@ -165,13 +207,8 @@ export const Statistics: React.FC = () => {
     return null;
   };
 
-  if (isLoading && !dailyProgress) {
-    return (
-      <div className={styles.statistics}>
-        <div className={styles.loading}>Loading statistics...</div>
-      </div>
-    );
-  }
+  // Show loading only on initial load when no data exists
+  const showTabLoading = isLoading && activeTab !== 'daily' && !statsData[activeTab as keyof StatsData];
 
   return (
     <div className={styles.statistics}>
@@ -259,8 +296,16 @@ export const Statistics: React.FC = () => {
         </motion.div>
       )}
 
+      {/* Loading indicator for non-daily tabs */}
+      {showTabLoading && (
+        <div className={styles.tabLoading}>
+          <div className={styles.loadingSpinner} />
+          <p>Loading {activeTab} data...</p>
+        </div>
+      )}
+
       {/* Weekly Line Chart */}
-      {activeTab === 'weekly' && statsData && (
+      {activeTab === 'weekly' && statsData.weekly && !showTabLoading && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -329,7 +374,7 @@ export const Statistics: React.FC = () => {
       )}
 
       {/* Monthly Line Chart */}
-      {activeTab === 'monthly' && statsData && (
+      {activeTab === 'monthly' && statsData.monthly && !showTabLoading && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -447,7 +492,7 @@ export const Statistics: React.FC = () => {
       )}
 
       {/* Yearly Bar Chart */}
-      {activeTab === 'yearly' && statsData && (
+      {activeTab === 'yearly' && statsData.yearly && !showTabLoading && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
