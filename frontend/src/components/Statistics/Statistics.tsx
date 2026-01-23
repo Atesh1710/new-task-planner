@@ -4,8 +4,6 @@ import { format, startOfWeek, subDays } from 'date-fns';
 import {
   LineChart,
   Line,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   PieChart,
@@ -135,27 +133,17 @@ export const Statistics: React.FC = () => {
 
   const formatMonthlyData = () => {
     if (!statsData?.monthly?.dailyData) return [];
-    // Group by week for monthly view
-    const weeklyData: { [key: string]: { tasks: number; habits: number; count: number } } = {};
-    
-    statsData.monthly.dailyData.forEach((d: any, index: number) => {
-      const weekNum = Math.floor(index / 7);
-      const weekLabel = `Week ${weekNum + 1}`;
-      
-      if (!weeklyData[weekLabel]) {
-        weeklyData[weekLabel] = { tasks: 0, habits: 0, count: 0 };
-      }
-      weeklyData[weekLabel].tasks += d.tasksCompleted;
-      weeklyData[weekLabel].habits += d.habitsCompleted;
-      weeklyData[weekLabel].count++;
+    // Show actual daily data with dates 1, 2, 3... up to month end
+    return statsData.monthly.dailyData.map((d: any) => {
+      const dateObj = new Date(d.date);
+      return {
+        day: dateObj.getDate(), // Day number: 1, 2, 3... 28/29/30/31
+        fullDate: format(dateObj, 'MMM d'),
+        tasks: d.tasksCompleted,
+        habits: d.habitsCompleted,
+        total: d.tasksCompleted + d.habitsCompleted,
+      };
     });
-
-    return Object.entries(weeklyData).map(([week, data]) => ({
-      week,
-      tasks: Math.round(data.tasks / data.count * 10) / 10,
-      habits: Math.round(data.habits / data.count * 10) / 10,
-      total: Math.round((data.tasks + data.habits) / data.count * 10) / 10,
-    }));
   };
 
   const formatYearlyData = () => {
@@ -387,48 +375,42 @@ export const Statistics: React.FC = () => {
           <div className={styles.chartContainer}>
             {isChartReady ? (
             <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={formatMonthlyData()}>
-                <defs>
-                  <linearGradient id="tasksGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#e63946" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#e63946" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="habitsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#14b8a6" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
+              <LineChart data={formatMonthlyData()}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis 
-                  dataKey="week" 
+                  dataKey="day" 
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: 'var(--text-tertiary)', fontSize: 12 }}
+                  tick={{ fill: 'var(--text-tertiary)', fontSize: 10 }}
+                  interval={2}
                 />
                 <YAxis 
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: 'var(--text-tertiary)', fontSize: 12 }}
+                  allowDecimals={false}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
-                <Area
+                <Line
                   type="monotone"
                   dataKey="tasks"
                   stroke="#e63946"
                   strokeWidth={2}
-                  fill="url(#tasksGradient)"
-                  name="Avg Tasks/Day"
+                  dot={{ fill: '#e63946', strokeWidth: 1, r: 3 }}
+                  activeDot={{ r: 6 }}
+                  name="Tasks"
                 />
-                <Area
+                <Line
                   type="monotone"
                   dataKey="habits"
                   stroke="#14b8a6"
                   strokeWidth={2}
-                  fill="url(#habitsGradient)"
-                  name="Avg Habits/Day"
+                  dot={{ fill: '#14b8a6', strokeWidth: 1, r: 3 }}
+                  activeDot={{ r: 6 }}
+                  name="Habits"
                 />
-              </AreaChart>
+              </LineChart>
             </ResponsiveContainer>
             ) : (
               <div className={styles.chartLoading}>Loading chart...</div>
