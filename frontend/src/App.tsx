@@ -7,6 +7,7 @@ import { Calendar } from './components/Calendar/Calendar';
 import { TaskList } from './components/Tasks/TaskList';
 import { HabitList } from './components/Habits/HabitList';
 import { HabitPerformance } from './components/Habits/HabitPerformance';
+import { MonthlyChart } from './components/Statistics/MonthlyChart';
 import { ProgressBar } from './components/ui/ProgressBar';
 import { useApp } from './context/AppContext';
 import styles from './App.module.css';
@@ -55,6 +56,8 @@ const DashboardContent: React.FC = () => {
         </div>
         {/* Habit Performance below habits */}
         <HabitPerformance />
+        {/* Monthly Progress Chart */}
+        <MonthlyChart />
       </div>
     </div>
   );
