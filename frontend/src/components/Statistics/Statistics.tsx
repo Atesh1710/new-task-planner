@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { format, startOfWeek, subDays } from 'date-fns';
+import { format, startOfWeek } from 'date-fns';
 import {
   LineChart,
   Line,
@@ -18,7 +18,7 @@ import {
 } from 'recharts';
 import { TrendingUp, Target, Flame, Award, Calendar } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { progressApi, habitsApi } from '../../services/api';
+import { progressApi } from '../../services/api';
 import { CircularProgress, ProgressBar } from '../ui/ProgressBar';
 import styles from './Statistics.module.css';
 
@@ -81,15 +81,6 @@ export const Statistics: React.FC = () => {
           data = yearlyRes.data;
           setStatsData(prev => ({ ...prev, yearly: data }));
           break;
-      }
-
-      // Fetch habit stats if not already loaded (shared across tabs)
-      if (!statsData.habitStats) {
-        const habitStatsRes = await habitsApi.getStats(
-          format(subDays(new Date(), 30), 'yyyy-MM-dd'),
-          format(new Date(), 'yyyy-MM-dd')
-        );
-        setStatsData(prev => ({ ...prev, habitStats: habitStatsRes.data }));
       }
 
       setLoadedTabs(prev => new Set(Array.from(prev).concat(tab)));
@@ -530,51 +521,6 @@ export const Statistics: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Habit Stats */}
-      {statsData?.habitStats?.byHabit && statsData.habitStats.byHabit.length > 0 && activeTab !== 'daily' && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className={styles.chartSection}
-        >
-          <h4 className={styles.sectionTitle}>Habit Performance (Last 30 Days)</h4>
-          <div className={styles.habitStats}>
-            {statsData.habitStats.byHabit.map((habit: any) => (
-              <div key={habit.id} className={styles.habitStatCard}>
-                <div className={styles.habitStatHeader}>
-                  <span
-                    className={styles.habitDot}
-                    style={{ backgroundColor: habit.color }}
-                  />
-                  <span className={styles.habitName}>{habit.name}</span>
-                  {habit.priority === 3 && <span className={styles.priorityBadge}>High</span>}
-                </div>
-                <div className={styles.habitStatContent}>
-                  <div className={styles.habitMetric}>
-                    <span className={styles.metricValue}>{habit.completionRate}%</span>
-                    <span className={styles.metricLabel}>Completion</span>
-                  </div>
-                  <div className={styles.habitMetric}>
-                    <span className={styles.metricValue}>{habit.currentStreak}</span>
-                    <span className={styles.metricLabel}>Streak</span>
-                  </div>
-                  <div className={styles.habitMetric}>
-                    <span className={styles.metricValue}>{habit.longestStreak}</span>
-                    <span className={styles.metricLabel}>Best</span>
-                  </div>
-                </div>
-                <ProgressBar
-                  value={habit.completionRate}
-                  size="sm"
-                  color={habit.color}
-                  showLabel={false}
-                />
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 };
