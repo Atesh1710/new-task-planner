@@ -6,8 +6,7 @@ import { AuthPage } from './components/Auth/AuthPage';
 import { Calendar } from './components/Calendar/Calendar';
 import { TaskList } from './components/Tasks/TaskList';
 import { HabitList } from './components/Habits/HabitList';
-import { HabitPerformance } from './components/Habits/HabitPerformance';
-import { MonthlyChart } from './components/Statistics/MonthlyChart';
+import { ProgressCharts } from './components/Statistics/ProgressCharts';
 import { ProgressBar } from './components/ui/ProgressBar';
 import { useApp } from './context/AppContext';
 import styles from './App.module.css';
@@ -47,17 +46,15 @@ const DashboardContent: React.FC = () => {
         </div>
       )}
 
-      {/* Main Layout - Calendar on top, then Tasks and Habits */}
+      {/* Main Layout - Calendar on top, then Charts, then Tasks and Habits */}
       <div className={styles.mainContent}>
         <Calendar />
+        {/* Progress Charts below calendar */}
+        <ProgressCharts />
         <div className={styles.listsContainer}>
           <TaskList />
           <HabitList />
         </div>
-        {/* Habit Performance below habits */}
-        <HabitPerformance />
-        {/* Monthly Progress Chart */}
-        <MonthlyChart />
       </div>
     </div>
   );
