@@ -1,0 +1,245 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.chartSection {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-md);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-primary);
+}
+
+.titleRow h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin: 0;
+}
+
+.titleRow svg {
+  color: var(--primary-500);
+}
+
+.tabs {
+  display: flex;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 3px;
+}
+
+.tab {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+}
+
+.tab.active {
+  background: var(--surface);
+  color: var(--accent-500);
+  box-shadow: var(--shadow-sm);
+}
+
+.chartWrapper {
+  width: 100%;
+  min-height: 260px;
+}
+
+.loading,
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-tertiary);
+}
+
+.tooltip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-lg);
+}
+
+.tooltipDate {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+/* Habit Performance Toggle */
+.habitToggleSection {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.habitToggleBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: background var(--transition-fast);
+}
+
+.habitToggleBtn:hover {
+  background: var(--bg-secondary);
+}
+
+.habitToggleBtn svg {
+  color: var(--text-tertiary);
+}
+
+.habitContent {
+  padding: 0 var(--space-5) var(--space-5);
+}
+
+.habitStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.habitStatCard {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.habitStatHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.habitDot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+}
+
+.habitName {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.priorityBadge {
+  font-size: var(--text-xs);
+  padding: 2px 6px;
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--primary-500);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.habitStatContent {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.habitMetric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.metricValue {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.metricLabel {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .chartSection {
+    padding: var(--space-4);
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .titleRow {
+    justify-content: center;
+  }
+
+  .tabs {
+    justify-content: center;
+  }
+
+  .tab {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .chartWrapper {
+    min-height: 180px;
+  }
+
+  .habitStats {
+    grid-template-columns: 1fr;
+  }
+
+  .habitStatContent {
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 400px) {
+  .tab {
+    padding: var(--space-1) var(--space-2);
+    font-size: 10px;
+  }
+
+  .titleRow h3 {
+    font-size: var(--text-base);
+  }
+}
+
