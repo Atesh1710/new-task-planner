@@ -91,16 +91,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenStats, onOpenSettings }) =
               <span className={styles.userName}>{user.name}</span>
             </div>
           )}
-          <Button variant="ghost" size="sm" onClick={onOpenStats}>
+          <Button variant="ghost" size="sm" onClick={onOpenStats} title="Statistics">
             <BarChart3 size={20} />
           </Button>
-          <Button variant="ghost" size="sm" onClick={onOpenSettings}>
+          <Button variant="ghost" size="sm" onClick={onOpenSettings} title="Settings">
             <Settings size={20} />
           </Button>
-          <Button variant="ghost" size="sm" onClick={toggleTheme}>
+          <Button variant="ghost" size="sm" onClick={toggleTheme} title={theme.isDarkMode ? 'Light Mode' : 'Dark Mode'}>
             {theme.isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
           </Button>
-          <Button variant="ghost" size="sm" onClick={logout}>
+          <Button variant="ghost" size="sm" onClick={logout} title="Logout">
             <LogOut size={20} />
           </Button>
         </motion.div>
