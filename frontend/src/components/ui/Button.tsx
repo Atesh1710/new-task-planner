@@ -14,6 +14,7 @@ interface ButtonProps {
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
   onClick?: () => void;
+  title?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -28,6 +29,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   type = 'button',
   onClick,
+  title,
 }) => {
   return (
     <motion.button
@@ -37,6 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled || isLoading}
       type={type}
       onClick={onClick}
+      title={title}
     >
       {isLoading ? (
         <span className={styles.loader} />
